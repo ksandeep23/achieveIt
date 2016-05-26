@@ -16,9 +16,22 @@ Developer Test
 ==============
 
 1.  What editor will you use to edit this file, and why?
+
+Atom. This is my default file editor. It is one of the best cross platform editors
+and provides syntax highlighting for most programming languages.
+
 2.  Some of the questions will ask for a solution in the language of
     your choice.  What language(s) will you choose, and why?
+
+C#. This is my favorite programming language. It is a general purpose OOPS language
+and is very easy to use.
+
+The second language that I will use is Objective-C.
+
 3.  Explain the difference between testing and debugging.
+
+
+
 4.  Consider a user querying a search engine.  Describe, in as much
     detail as you like, what happens between the user clicking the
     "submit" button and the display of the results.
@@ -61,14 +74,31 @@ employee                              department
 
 5.  Write an SQL query to list the full name of every employee,
     alphabetized by first name.
+
+SELECT name FROM employee ORDER BY name;
+
 6.  Write an SQL query to list the full name of every employee,
     alphabetized by last name.
+
+SELECT name FROM employee ORDER BY LTRIM(REVERSE(LEFT(REVERSE(name), STRPOS(REVERSE(name), ' '))));
+
 7.  Write an SQL query to list the full name of every employee along
     with the full name of his/her manager.
+
+
+
 8.  Write an SQL query to list the full name of every employee in the
     Sales department.
+
+SELECT name FROM employee WHERE
+    (mgr_id = (SELECT head from department WHERE name = 'Sales')) OR
+    (id = (SELECT head from department WHERE name = 'Sales'));
+
 9.  Write an SQL query to list the full name of every employee along
     with name of his/her department.
+
+
+
 10. Is there a better design for a database that supports the queries
     described in questions 5-9?  If so, describe it.  If not, why not?
 11. Write a function in the language of your choice that implements
