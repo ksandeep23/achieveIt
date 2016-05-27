@@ -26,15 +26,61 @@ and provides syntax highlighting for most programming languages.
 C#. This is my favorite programming language. It is a general purpose OOPS language
 and is very easy to use.
 
-The second language that I will use is Objective-C.
+I used Objective-C for question 15. I am very familiar with this language.
+I used awk for question 16 as it provides a single line command-line utility for the question.
 
 3.  Explain the difference between testing and debugging.
 
+Software testing is used to identify if the software/program under test is working as expected for
+given inputs. Testing will only tell us whether something is working or not. It will not tell us why some test is
+failing. There are several types of testing like unit testing, functional testing, blackbox testing,
+performance testing, scalability testing etc that are used to test different aspects of the software.
 
+Debugging is used to identify the root cause of a single bug or issue. Various IDEs for programming languages
+such as Visual Studio, Eclipse, Xcode etc provide tools for debugging. We can step through each line of code
+as the program is running or set breakpoints in the code and let the program run till the breakpoint is reached.
+While debugging, we can watch the values of various variables that are currently in scope of the run.
 
 4.  Consider a user querying a search engine.  Describe, in as much
     detail as you like, what happens between the user clicking the
     "submit" button and the display of the results.
+
+I am assuming DNS querying is already complete because the search engine URL is already loaded in the browser.
+When the user enters a text and click on the Submit button the following events happen:
+- The Operating System (OS) on the user's device understands the raw mouse click on the "Submit" button.
+- The OS sends the raw mouse click at a raw screen co-ordinate to the browser
+- The browser converts raw screen co-ordinate in to a button click DOM event.
+- The DOM event triggers the javascript for the button.
+- The javascript in the page makes a POST operation on the search engine URL with the text entered in the search field.
+- The POST operation is converted in the http packets.
+- The http packets are converted to TCP packets.
+- The TCP packets are converted to IP packets.
+- The IP packets are sent over the Internet via BGP routing to the eventual server hosting the Search engine.
+There are other layers of the networking stack such as Medium access layer and Physical layer that aid in moving
+the packets from the users device to the hosting server. Also this process could include Wifi/WWAN, Internet Service Provider,
+Internet gateways, CDNs, firewalls, etc.
+- Once the IP packets reach the hosting server, they are re-assembled to TCP, and eventually http packets and
+sent to the server.
+- The hosting server understands the POST query.
+- The hosting server will run the "Search" query in its application database. The Search engine has an indexed view of
+the public Internet. The indexed view is created using a web crawler and various search terms are used as indexes. The index
+is similar to a (key, value) pair where the key is the index, and the values are the URLs for the indexes. The data structure
+will be much more complex than a simple (key, value) hashmap.
+- The hosting server will retrieve the URLs and the page snippets for pages that are relevant to the "Search" text.
+- The first 10-20 search results are combined into a single page view.
+- Relevant Ads for the Search query are also retrieved.
+- Also links for more search results are place in the bottom of the page.
+- The ads are combined with the search results, and a single page of html with javascript is created. The html includes
+all the miscellaneous items in the page such as logos, CSS, links to additional items, images results (if any), video results (if any),
+news results (if any) etc.
+- The resulting html page is sent as a response to the original POST request.
+- The POST response again follows the same network stack including http, TCP, IP, MAC, Physical Layers.
+- The html page reaches the browser.
+- The browser converts the html page in to the DOM tree.
+- The DOM tree is rendered on the browser.
+- The browser sends the pixel information to the OS on the user's device.
+- The OS renders the pixels.
+
 
 The two tables below describe relationships between employees,
 managers, and departments (the columns employee.mgr_id and
@@ -83,6 +129,7 @@ SELECT name FROM employee ORDER BY name;
     alphabetized by last name.
 
 --I am assuming Postgres SQL as the db.
+--Basically trim the name for the lastName and order by it
 
 SELECT name FROM employee ORDER BY LTRIM(REVERSE(LEFT(REVERSE(name), STRPOS(REVERSE(name), ' '))));
 
@@ -110,6 +157,31 @@ SELECT name FROM employee WHERE
     with name of his/her department.
 
 --I am assuming Postgres SQL as the db.
+--I am using CTE for creating a temporary table.
+
+--Recursive Common Table Expression (CTE)
+WITH RECURSIVE EmployeeList AS
+	--Anchor query
+	(SELECT manager.id, manager.name, manager.mgr_id,
+	department.name AS deptName
+	FROM employee AS manager
+	INNER JOIN department
+	ON department.head = manager.id
+	WHERE manager.mgr_id IS NULL
+
+	UNION ALL
+
+	--Recursive query
+	SELECT Emp.id, Emp.name, Emp.mgr_id,
+	EL.deptName
+	FROM employee AS Emp
+	--Recursively use the temporary EmployeeList table
+	INNER JOIN EmployeeList AS EL
+	ON Emp.mgr_id = El.id
+	--Stopping condition for the recursion
+	WHERE Emp.mgr_id IS NOT NULL)
+SELECT name, deptname FROM EmployeeList ORDER BY deptname;
+
 
 10. Is there a better design for a database that supports the queries
     described in questions 5-9?  If so, describe it.  If not, why not?
@@ -127,7 +199,8 @@ Yes, we can improve the database design by performing the following:
 12. Write a function in the language of your choice that performs
     binary search on a sorted array of integers.
 
-    // This function is written in C#. You can find the entire C# solution in the public github Repo
+    // This function is written in C#. You can find the entire C# solution in the public github Repo.
+    // This function was unit tested with various inputs. Please see the full solution for the unit tests.
 
     /// <summary>
     /// This functions returns the location of the numToBeFound in the inputArray using Binary Search Algorithm
@@ -181,37 +254,13 @@ Yes, we can improve the database design by performing the following:
 
     }
 
-    // The above function was tested using the following values to cover all edge cases.
-    //Zero sized array
-    int[] input1 = new int[] { };
-    Console.WriteLine(BinarySearch(input1, 1));
-
-    //Array with one value
-    int[] input2 = new int[] { 1 };
-    Console.WriteLine(BinarySearch(input2, 1));
-    Console.WriteLine(BinarySearch(input2, 3));
-
-    //Array with two values
-    int[] input3 = new int[] { 2, 5 };
-    Console.WriteLine(BinarySearch(input3, 2));
-    Console.WriteLine(BinarySearch(input3, 5));
-    Console.WriteLine(BinarySearch(input3, 3));
-    Console.WriteLine(BinarySearch(input3, 1));
-    Console.WriteLine(BinarySearch(input3, 7));
-
-    //Array with more than 2 values
-    int[] input4 = new int[] { 1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21 };
-    Console.WriteLine(BinarySearch(input4, 1));
-    Console.WriteLine(BinarySearch(input4, 9));
-    Console.WriteLine(BinarySearch(input4, 4));
-    Console.WriteLine(BinarySearch(input4, 25));
-    Console.WriteLine(BinarySearch(input4, 21));
-    Console.WriteLine(BinarySearch(input4, -3));
 
 13. Write a function in the language of your choice performs the query
     you wrote for question 7, and outputs the results as an HTML table.
 
-
+    //I am assuming a Postgres db. The full solution can be found in the github Repo
+    //I am using a direct SQL query here to simplify the answer. In real project, we
+    //should ideally use Entity framework with LINQ.
 
     /// <summary>
     /// A simple class to hold a (employee, manager) tuple
@@ -289,6 +338,7 @@ Yes, we can improve the database design by performing the following:
             table.Rows.Add(row);
         }
 
+        //Convert the html table in to string
         StringWriter stringWriter = new StringWriter();
         table.RenderControl(new System.Web.UI.HtmlTextWriter(stringWriter));
         Console.WriteLine(stringWriter.ToString());
@@ -302,6 +352,8 @@ Yes, we can improve the database design by performing the following:
     from the file.
 
     //This function is written in C#. The complete solution can be found in the github Repo
+    //I am adding a number of error messages. This could be an overkill for a simple question.
+    //Please see the answer for question 16 for a one line command using awk to do the same thing.
 
     /// <summary>
     /// Function to read a file and display the Nth line
@@ -350,5 +402,66 @@ Yes, we can improve the database design by performing the following:
 
 
 15. Write the function from question 12 in a different language.
+  //I am using Objective-C for this question. I am just translating the function in
+  //question12 to Objective-C. So there is no Objective-C project in the github Repo
+
+  /** This functions returns the location of the numToBeFound in the inputArray using Binary Search Algorithm
+  * If the numToBeFound does not exist in the inputArray, -1 will be returned.
+  *
+  * @param inputArray The input Array of integers
+  * @param numToBeFound The number to be found in the inputArray
+  * @returns: Location of the numToBeFound if it exists, -1 if it does not exist
+  */
+  + (int) BinarySearch:(NSArray *) inputArray forNumToBeFound:(int)numToBeFound
+  {
+      //Zero sized array
+      if ([inputArray count] == 0)
+          return -1;
+
+      int left, right, middle;
+
+      left = 0;
+      right = inputArray.Length - 1;
+
+      //Loop till you either find the number in the array or you complete the binary search.
+      while (true)
+      {
+          middle = (left + right) / 2;
+
+          //If the middle element in the inputArray matches, just return the index of the middle number
+          if (numToBeFound == (int)inputArray[middle])
+              return middle;
+
+          //We have finished the binary search. Stopping condition to prevent infinite loop
+          if (left == middle)
+          {
+              //Edge case for right-most element in the inputArray
+              //because the middle will never assume the value of the right-most element in the inputArray
+              if (numToBeFound == (int)inputArray[right])
+                  return right;
+              else
+                  return -1;
+          }
+
+          if (numToBeFound < (int)inputArray[middle])
+          {
+              //Search left half
+              right = middle;
+          }
+          else
+          {
+              //Search right half
+              left = middle;
+          }
+      }
+
+  }
+
+
 16. Write the program from question 14 in a different language (it can
     be the same language you used for #15, but it doesn't have to be).
+
+//Here is a simple awk command line to perform this. You can run this on any Linux/Mac command shell.
+//Replace Hello.txt with the path to the actual file.
+//Replace 3 with the value for N
+$ cat Hello.txt | awk NR==3
