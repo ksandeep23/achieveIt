@@ -212,6 +212,12 @@ Yes, we can improve the database design by performing the following:
     /// <param name="hi"> The high index </param>
     static void QuickSort(int[] inputArray, int lo, int hi)
     {
+        if ((lo < 0) || (hi > inputArray.Length - 1))
+        {
+            Console.WriteLine("Bounds for Quicksort incorrect");
+            return;
+        }
+
         if (lo < hi)
         {
             int p = partition(inputArray, lo, hi);
@@ -347,9 +353,18 @@ Yes, we can improve the database design by performing the following:
     /// I have removed references to my personal Postgres db because it is a local one.
     /// </summary>
     static void RunSQLQueryAndDisplayHTMLTable() {
-        using (var conn = new NpgsqlConnection("Host=XXXXXXX;Username=YYYYYYY;Password=ZZZZZZ;Database=DDDDDDDD"))
+        using (var conn = new NpgsqlConnection("Host=XXXXX;Username=YYYYYY;Password=ZZZZZZ;Database=DDDDDDDDD"))
         {
-            conn.Open();
+            try
+            {
+                conn.Open();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error: Could not connect to Database. Exception message - " + e.Message);
+                return;
+            }
+
             using (var cmd = new NpgsqlCommand())
             {
                 cmd.Connection = conn;
@@ -357,24 +372,30 @@ Yes, we can improve the database design by performing the following:
                 // The SQL command to retrieve the (employee, manager) tuple
                 cmd.CommandText = "SELECT employee.name AS EMPLOYEE_NAME, manager.name AS MANAGER_NAME FROM employee AS employee LEFT JOIN employee AS manager ON employee.mgr_id = manager.id;";
 
-                // Create a list of all retrieved (employee, manager) tuples
-                using (var reader = cmd.ExecuteReader())
+                try
                 {
-                    var employeeManagerTupleList = new List<EmployeeManagerTuple>();
-                    while (reader.Read())
+                    // Create a list of all retrieved (employee, manager) tuples
+                    using (var reader = cmd.ExecuteReader())
                     {
-                        var tuple = new EmployeeManagerTuple();
-                        try
+                        var employeeManagerTupleList = new List<EmployeeManagerTuple>();
+                        while (reader.Read())
                         {
-                            tuple.employee = reader.GetString(0);
-                            tuple.manager = reader.GetString(1);
+                            var tuple = new EmployeeManagerTuple();
+                            try
+                            {
+                                tuple.employee = reader.GetString(0);
+                                tuple.manager = reader.GetString(1);
+                            }
+                            catch { }
+                            employeeManagerTupleList.Add(tuple);
                         }
-                        catch { }
-                        employeeManagerTupleList.Add(tuple);
-                    }
 
-                    //Convert the list into html table and display.
-                    DisplayHtmlTable(employeeManagerTupleList);
+                        //Convert the list into html table and display.
+                        DisplayHtmlTable(employeeManagerTupleList);
+                    }
+                } catch (Exception e)
+                {
+                    Console.WriteLine("Error: Could not execute the SQL query. Exception message: " + e.Message);
                 }
             }
         }
