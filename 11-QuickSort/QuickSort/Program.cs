@@ -65,6 +65,12 @@ namespace QuickSort
         /// <param name="hi"> The high index </param>
         static void QuickSort(int[] inputArray, int lo, int hi)
         {
+            if ((lo < 0) || (hi > inputArray.Length - 1))
+            {
+                Console.WriteLine("Bounds for Quicksort incorrect");
+                return;
+            }
+
             if (lo < hi)
             {
                 int p = partition(inputArray, lo, hi);

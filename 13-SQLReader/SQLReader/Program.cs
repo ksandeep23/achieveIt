@@ -43,32 +43,47 @@ namespace SQLReader
         static void RunSQLQueryAndDisplayHTMLTable() {
             using (var conn = new NpgsqlConnection("Host=XXXXX;Username=YYYYYY;Password=ZZZZZZ;Database=DDDDDDDDD"))
             {
-                conn.Open();
+                try
+                {
+                    conn.Open();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Error: Could not connect to Database. Exception message - " + e.Message);
+                    return;
+                }
+
                 using (var cmd = new NpgsqlCommand())
                 {
                     cmd.Connection = conn;
 
                     // The SQL command to retrieve the (employee, manager) tuple
                     cmd.CommandText = "SELECT employee.name AS EMPLOYEE_NAME, manager.name AS MANAGER_NAME FROM employee AS employee LEFT JOIN employee AS manager ON employee.mgr_id = manager.id;";
-                    
-                    // Create a list of all retrieved (employee, manager) tuples
-                    using (var reader = cmd.ExecuteReader())
-                    {
-                        var employeeManagerTupleList = new List<EmployeeManagerTuple>();
-                        while (reader.Read())
-                        {
-                            var tuple = new EmployeeManagerTuple();
-                            try
-                            {
-                                tuple.employee = reader.GetString(0);
-                                tuple.manager = reader.GetString(1);
-                            }
-                            catch { }
-                            employeeManagerTupleList.Add(tuple);
-                        }
 
-                        //Convert the list into html table and display.
-                        DisplayHtmlTable(employeeManagerTupleList);
+                    try
+                    {
+                        // Create a list of all retrieved (employee, manager) tuples
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            var employeeManagerTupleList = new List<EmployeeManagerTuple>();
+                            while (reader.Read())
+                            {
+                                var tuple = new EmployeeManagerTuple();
+                                try
+                                {
+                                    tuple.employee = reader.GetString(0);
+                                    tuple.manager = reader.GetString(1);
+                                }
+                                catch { }
+                                employeeManagerTupleList.Add(tuple);
+                            }
+
+                            //Convert the list into html table and display.
+                            DisplayHtmlTable(employeeManagerTupleList);
+                        }
+                    } catch (Exception e)
+                    {
+                        Console.WriteLine("Error: Could not execute the SQL query. Exception message: " + e.Message);
                     }
                 }
             }
@@ -94,6 +109,7 @@ namespace SQLReader
                 row.Cells.Add(cell1);
                 table.Rows.Add(row);
             }
+
 
             StringWriter stringWriter = new StringWriter();
             table.RenderControl(new System.Web.UI.HtmlTextWriter(stringWriter));
