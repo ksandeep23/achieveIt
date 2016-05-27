@@ -46,7 +46,7 @@ While debugging, we can watch the values of various variables that are currently
     "submit" button and the display of the results.
 
 I am assuming DNS querying is already complete because the search engine URL is already loaded in the browser.
-When the user enters a text and click on the Submit button the following events happen:
+When the user enters a text and clicks on the Submit button the following events happen:
 - The Operating System (OS) on the user's device understands the raw mouse click on the "Submit" button.
 - The OS sends the raw mouse click at a raw screen co-ordinate to the browser
 - The browser converts raw screen co-ordinate in to a button click DOM event.
