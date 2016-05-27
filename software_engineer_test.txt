@@ -158,6 +158,8 @@ SELECT name FROM employee WHERE
 
 --I am assuming Postgres SQL as the db.
 --I am using CTE for creating a temporary table.
+--I used the examples in this MSDN documentation for reference: https://technet.microsoft.com/en-us/library/ms186243(v=sql.105).aspx
+
 
 --Recursive Common Table Expression (CTE)
 WITH RECURSIVE EmployeeList AS
@@ -196,10 +198,67 @@ Yes, we can improve the database design by performing the following:
 11. Write a function in the language of your choice that implements
     quicksort on an array of integers.
 
+    //I used C# for this question. I basically implemented the Lumoto Partition Scheme
+    //for QuickSort as described in this wikipedia entry: https://en.wikipedia.org/wiki/Quicksort
+    //The complete code for the QuickSort solution with Unit tests can be found in the
+    //github repo at: https://github.com/ksandeep23/achieveIt
+
+    /// <summary>
+    /// The Recursive QuickSort function. Implement the Lomuto QuickSort algorithm
+    /// from the Wikipedia entry in the following URL: https://en.wikipedia.org/wiki/Quicksort
+    /// </summary>
+    /// <param name="inputArray"> inputArray </param>
+    /// <param name="lo"> The low index </param>
+    /// <param name="hi"> The high index </param>
+    static void QuickSort(int[] inputArray, int lo, int hi)
+    {
+        if (lo < hi)
+        {
+            int p = partition(inputArray, lo, hi);
+            QuickSort(inputArray, lo, p - 1);
+            QuickSort(inputArray, p + 1, hi);
+        }
+    }
+
+    /// <summary>
+    /// Partition the array
+    /// </summary>
+    /// <param name="inputArray"> Input array </param>
+    /// <param name="lo"> The low index </param>
+    /// <param name="hi"> The high index </param>
+    /// <returns></returns>
+    static int partition(int[] inputArray, int lo, int hi)
+    {
+        //Pivot
+        int pivot = inputArray[hi];
+        int i = lo;
+        for (int j = lo; j < hi; j++)
+        {
+            if (inputArray[j] <= pivot)
+            {
+                //Swap inputArray[i] and inputArray[j]
+                int temp = inputArray[i];
+                inputArray[i] = inputArray[j];
+                inputArray[j] = temp;
+                i++;
+            }
+        }
+
+        //Swap inputArray[i] and iputArray[hi]
+        int temp1 = inputArray[i];
+        inputArray[i] = inputArray[hi];
+        inputArray[hi] = temp1;
+
+        return i;
+
+    }
+
+
 12. Write a function in the language of your choice that performs
     binary search on a sorted array of integers.
 
-    // This function is written in C#. You can find the entire C# solution in the public github Repo.
+    // This function is written in C#.
+    // You can find the entire C# solution in the public github Repo: https://github.com/ksandeep23/achieveIt
     // This function was unit tested with various inputs. Please see the full solution for the unit tests.
 
     /// <summary>
@@ -258,9 +317,12 @@ Yes, we can improve the database design by performing the following:
 13. Write a function in the language of your choice performs the query
     you wrote for question 7, and outputs the results as an HTML table.
 
-    //I am assuming a Postgres db. The full solution can be found in the github Repo
-    //I am using a direct SQL query here to simplify the answer. In real project, we
-    //should ideally use Entity framework with LINQ.
+    // I am assuming a Postgres db.
+    // You can find the entire C# solution in the public github Repo: https://github.com/ksandeep23/achieveIt
+    // I am using a direct SQL query here to simplify the answer. In real project, we
+    // should ideally use Entity framework with LINQ.
+    // The output of the program is copied in a txt file Output.txt and is placed in the source code directory.
+    // I have removed references to my personal Postgres db because it cannot be accessed from public Internet.
 
     /// <summary>
     /// A simple class to hold a (employee, manager) tuple
@@ -279,12 +341,13 @@ Yes, we can improve the database design by performing the following:
     }
 
     /// <summary>
-    /// Run the SQL query to retrieve the (employee, manager) tuple and display as a hml table.
+    /// Run the SQL query to retrieve the (employee, manager) tuple and display as a html table.
     /// I am using a personal Postgres SQL server. Also I am using the Npgsql library to connect to the Postgres db.
     /// Documentation for this library can be found at: http://www.npgsql.org/doc/index.html
+    /// I have removed references to my personal Postgres db because it is a local one.
     /// </summary>
     static void RunSQLQueryAndDisplayHTMLTable() {
-        using (var conn = new NpgsqlConnection("Host=XXXXXXX;Username=YYYYYYY;Password=ZZZZZZ;Database=starmobile-sandeep"))
+        using (var conn = new NpgsqlConnection("Host=XXXXXXX;Username=YYYYYYY;Password=ZZZZZZ;Database=DDDDDDDD"))
         {
             conn.Open();
             using (var cmd = new NpgsqlCommand())
@@ -347,11 +410,14 @@ Yes, we can improve the database design by performing the following:
 
 
 
+
+
 14. Write a program in the language of your choice that takes a filename
     and a number N as arguments and retrieves and outputs the Nth line
     from the file.
 
-    //This function is written in C#. The complete solution can be found in the github Repo
+    //This function is written in C#.
+    // You can find the entire C# solution in the public github Repo: https://github.com/ksandeep23/achieveIt
     //I am adding a number of error messages. This could be an overkill for a simple question.
     //Please see the answer for question 16 for a one line command using awk to do the same thing.
 
